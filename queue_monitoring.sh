@@ -162,8 +162,20 @@
     if [[ ${determine_line} -eq 0 ]]; then
       node_name=`echo ${line} | cut -d' ' -f1`
       load_average=`echo ${line} | cut -d' ' -f4`
-      total_mem=`echo ${line} | cut -d' ' -f5 | cut -d'.' -f1`
-      using_mem=`echo ${line} | cut -d' ' -f6 | cut -d'.' -f1`
+      pre_total_mem=`echo ${line} | cut -d' ' -f5`
+      pre_using_mem=`echo ${line} | cut -d' ' -f6`
+      if [[ $pre_total_mem == *"G" ]]; then
+        total_mem=`echo ${line} | cut -d' ' -f5 | cut -d'.' -f1`
+      else
+	total_mem=`echo ${pre_total_mem} | cut -d'.' -f1`
+	total_mem=`expr ${total_mem} / 1000 | bc`
+      fi
+      if [[ $pre_using_mem == *"G" ]]; then
+        using_mem=`echo ${pre_using_mem} | cut -d'.' -f1`
+      else
+	using_mem=`echo ${pre_using_mem} | cut -d'.' -f1`
+	using_mem=`expr ${using_mem} / 1000 | bc`
+      fi
       line_count=`expr $line_count + 1`
     else
       queue_name=`echo ${line} | cut -d' ' -f1`
